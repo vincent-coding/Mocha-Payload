@@ -284,7 +284,7 @@ int _start(int argc, char **argv) {
     unsigned int mainEntryPoint = load_elf_image(&private_data, pElfBuffer);
 
     if(mainEntryPoint == 0) {
-        OSFatal("failed to load elf");
+        OSFatal("[MOCHA PAYLOAD] Unable to load Mocha CFW.");
     }
 
     //! Install our entry point hook
