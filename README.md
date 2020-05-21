@@ -7,7 +7,7 @@ You must therefore have the Homebrew Channel installed.<br /><br />The mocha.elf
 ```java
 sd:/wiiu/apps/mocha/mocha.elf
 ```
-And the file must payload.elf must be here:
+And the payload.elf file must be here:
 ```java
 sd:/wiiu/payload.elf
 ```
