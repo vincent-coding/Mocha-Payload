@@ -14,5 +14,5 @@ Test with and without the __"Skip this menu on launch"__ option.<br />Console us
 <br /><br />Tested site:
 - [u.wiidb.de](http://u.wiidb.de/) [Working]
 - [wiiuexploit.xyz](http://wiiuexploit.xyz/) [Working]
-- [Indexiine](https://gbatemp.net/threads/indexiine-load-cfw-during-boot-and-offline-without-a-vc-ds-title.553681/) [Not Tested]
+- [Indexiine](https://gbatemp.net/threads/indexiine-load-cfw-during-boot-and-offline-without-a-vc-ds-title.553681/) [Working]
 - [wiiubru.com](http://wiiubru.com/flump/) [Working]
