@@ -7,6 +7,10 @@ You must therefore have the Homebrew Channel installed.<br /><br />The mocha.elf
 ```java
 sd:/wiiu/apps/mocha/mocha.elf
 ```
+And the file must payload.elf must be here:
+```java
+sd:/wiiu/payload.elf
+```
 ## Additional information.
 Test with and without the __"Skip this menu on launch"__ option.<br />Console used for testing:
 - EUR: WiiU 5.5.4
