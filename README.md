@@ -17,6 +17,6 @@ Test with and without the __"Skip this menu on launch"__ option.<br />Console us
 - USA WiiU 5.5.4
 <br /><br />Tested site:
 - [u.wiidb.de](http://u.wiidb.de/) [Working]
-- [wiiuexploit.xyz](http://wiiuexploit.xyz/) [Working]
+- [wiiuexploit.xyz](http://wiiuexploit.xyz/) [Working] *even with the new version.*
 - [Indexiine](https://gbatemp.net/threads/indexiine-load-cfw-during-boot-and-offline-without-a-vc-ds-title.553681/) [Working]
 - [wiiubru.com](http://wiiubru.com/flump/) [Working]
