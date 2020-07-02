@@ -2,7 +2,6 @@
 #include "sd_loader.h"
 #include "../sd_loader/src/common.h"
 #include <stdint.h>
-#include <string.h>
 
 #define OSDynLoad_Acquire ((void (*)(char* rpl, unsigned int *handle))0x0102A3B4)
 #define OSDynLoad_FindExport ((void (*)(unsigned int handle, int isdata, char *symbol, void *address))0x0102B828)
@@ -34,34 +33,6 @@ extern void SCKernelCopyData(unsigned int addr, unsigned int src, unsigned int l
 
 extern void SC_0x25_KernelCopyData(unsigned int addr, unsigned int src, unsigned int len);
 
-typedef struct
-{
-    float x,y;
-} Vec2D;
-
-typedef struct
-{
-    uint16_t x, y;               /* Touch coordinates */
-    uint16_t touched;            /* 1 = Touched, 0 = Not touched */
-    uint16_t invalid;            /* 0 = All valid, 1 = X invalid, 2 = Y invalid, 3 = Both invalid? */
-} VPADTPData;
-
-typedef struct
-{
-    uint32_t btns_h;                  /* Held buttons */
-    uint32_t btns_d;                  /* Buttons that are pressed at that instant */
-    uint32_t btns_r;                  /* Released buttons */
-    Vec2D lstick, rstick;        /* Each contains 4-byte X and Y components */
-    char unknown1c[0x52 - 0x1c]; /* Contains accelerometer and gyroscope data somewhere */
-    VPADTPData tpdata;           /* Normal touchscreen data */
-    VPADTPData tpdata1;          /* Modified touchscreen data 1 */
-    VPADTPData tpdata2;          /* Modified touchscreen data 2 */
-    char unknown6a[0xa0 - 0x6a];
-    uint8_t volume;
-    uint8_t battery;             /* 0 to 6 */
-    uint8_t unk_volume;          /* One less than volume */
-    char unknowna4[0xac - 0xa4];
-} VPADData;
 
 void __attribute__ ((noinline)) kern_write(void *addr, uint32_t value);
 
@@ -89,8 +60,6 @@ typedef struct _private_data_t {
     EXPORT_DECL(int, FSGetStatFile, void *pClient, void *pCmd, int fd, void *buffer, int error);
     EXPORT_DECL(int, FSReadFile, void *pClient, void *pCmd, void *buffer, int size, int count, int fd, int flag, int errHandling);
     EXPORT_DECL(int, FSCloseFile, void *pClient, void *pCmd, int fd, int errHandling);
-
-    EXPORT_DECL(int, VPADRead, int controller, VPADData *buffer, unsigned int num, int *error);
 
     EXPORT_DECL(int, SYSRelaunchTitle, int argc, char** argv);
 } private_data_t;
@@ -129,10 +98,6 @@ static void loadFunctionPointers(private_data_t * private_data) {
     OS_FIND_EXPORT(coreinit_handle, "FSGetStatFile", private_data->FSGetStatFile);
     OS_FIND_EXPORT(coreinit_handle, "FSReadFile", private_data->FSReadFile);
     OS_FIND_EXPORT(coreinit_handle, "FSCloseFile", private_data->FSCloseFile);
-
-    unsigned int vpad_handle;
-    OSDynLoad_Acquire("vpad.rpl", &vpad_handle);
-    OS_FIND_EXPORT(vpad_handle, "VPADRead", private_data->VPADRead);
 
     unsigned int sysapp_handle;
     OSDynLoad_Acquire("sysapp.rpl", &sysapp_handle);
@@ -205,30 +170,6 @@ void KernelWriteU32(uint32_t addr, uint32_t value, private_data_t * pdata) {
     pdata->ICInvalidateRange((void *)addr, 4);
 }
 
-typedef struct
-{
-	int val;
-	char txt[12];
-} config_select;
-
-typedef struct
-{
-    uint32_t flag;
-    uint32_t permission;
-    uint32_t owner_id;
-    uint32_t group_id;
-    uint32_t size;
-    uint32_t alloc_size;
-    uint64_t quota_size;
-    uint32_t ent_id;
-    uint64_t ctime;
-    uint64_t mtime;
-    uint8_t attributes[48];
-} __attribute__((packed)) FSStat;
-
-#define __os_snprintf ((int(*)(char* s, int n, const char * format, ... ))0x0102F160)
-#define MIN(a, b) (((a)>(b))?(b):(a))
-
 int _start(int argc, char **argv) {
     kern_write((void*)(KERN_SYSCALL_TBL_1 + (0x25 * 4)), (unsigned int)SCKernelCopyData);
     kern_write((void*)(KERN_SYSCALL_TBL_2 + (0x25 * 4)), (unsigned int)SCKernelCopyData);
@@ -247,36 +188,6 @@ int _start(int argc, char **argv) {
     private_data_t private_data;
     loadFunctionPointers(&private_data);
 
-	strcpy((void*)0xF5E70000,"/vol/external01/wiiu/apps/mocha/mocha.elf");
-
-    int iFd = -1;
-	void *pClient = private_data.MEMAllocFromDefaultHeapEx(0x1700,4);
-	void *pCmd = private_data.MEMAllocFromDefaultHeapEx(0xA80,4);
-	void *pBuffer = NULL;
-
-    private_data.FSInit();
-	private_data.FSInitCmdBlock(pCmd);
-	private_data.FSAddClientEx(pClient, 0, -1);
-
-    char tempPath[0x300];
-    char mountPath[128];
-
-    // mount sd
-    private_data.FSGetMountSource(pClient, pCmd, 0, tempPath, -1);
-    private_data.FSMount(pClient, pCmd, tempPath, mountPath, 128, -1);
-
-    if(pClient && pCmd)
-	{
-		if(iFd >= 0)
-			private_data.FSCloseFile(pClient, pCmd, iFd, -1);
-        private_data.FSUnmount(pClient, pCmd, mountPath, -1);
-		private_data.FSDelClient(pClient);
-		private_data.MEMFreeToDefaultHeap(pClient);
-		private_data.MEMFreeToDefaultHeap(pCmd);
-	}
-	if(pBuffer)
-		private_data.MEMFreeToDefaultHeap(pBuffer);
-
     InstallPatches(&private_data);
 
     unsigned char * pElfBuffer = (unsigned char *) sd_loader_sd_loader_elf; // use this address as temporary to load the elf
@@ -284,7 +195,7 @@ int _start(int argc, char **argv) {
     unsigned int mainEntryPoint = load_elf_image(&private_data, pElfBuffer);
 
     if(mainEntryPoint == 0) {
-        OSFatal("[MOCHA PAYLOAD] Unable to load Mocha CFW.");
+        OSFatal("failed to load elf");
     }
 
     //! Install our entry point hook
@@ -341,8 +252,6 @@ static void InstallPatches(private_data_t *private_data) {
     private_data->memcpy((void*)&ELF_DATA_ADDR, &bufferU32, sizeof(bufferU32));
     bufferU32 = 0;
     private_data->memcpy((void*)&ELF_DATA_SIZE, &bufferU32, sizeof(bufferU32));
-
-	private_data->memcpy((void*)SD_LOADER_PATH, (void*)0xF5E70000, 250);
 
     osSpecificFunctions.addr_OSDynLoad_Acquire = (unsigned int)OSDynLoad_Acquire;
     osSpecificFunctions.addr_OSDynLoad_FindExport = (unsigned int)OSDynLoad_FindExport;
