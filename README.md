@@ -11,6 +11,23 @@ And the payload.elf file must be here:
 ```java
 sd:/wiiu/payload.elf
 ```
+## Recommended configuration
+Thanks to **niekniek** for giving it to me.<br />
+This configuration is recommended because it launches Mocha CFW directly, with the possibility of launching the Homebrew Launcher Channel.<br />
+You can find the configuration file, named `config.ini` in the `MochaCFW` folder, provided you have changed the basic configuration of MochaCFW.
+```
+[MOCHA]
+viewMode=0
+directLaunch=1
+launchImage=1
+noIosReload=0
+launchSysMenu=1
+redNAND=0
+seeprom_red=0
+otp_red=0
+syshaxXml=0
+```
+
 ## Additional information.
 Test with and without the __"Skip this menu on launch"__ option.<br />Console used for testing:
 - EUR: WiiU 5.5.4
