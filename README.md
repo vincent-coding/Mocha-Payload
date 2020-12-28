@@ -11,10 +11,15 @@ And the payload.elf file must be here:
 ```java
 sd:/wiiu/payload.elf
 ```
-## Recommended configuration
+## Recommended Mocha configuration
 Thanks to **niekniek** for giving it to me.<br />
-This configuration is recommended because it launches Mocha CFW directly, with the possibility of launching the Homebrew Launcher Channel.<br />
-You can find the configuration file, named `config.ini` in the `MochaCFW` folder, provided you have changed the basic configuration of MochaCFW.
+You can find your configuration file here (if you have followed the **WARNING** section):
+```java
+sd:/wiiu/apps/mocha/config.ini
+```
+The file is called `config.ini`, and can very easily be edited (for example with the Windows notepad, or Gedit under linux).<br />
+The file is created only **IF YOU** have changed the basic configuration. If you don't have it, you can create it manually (*not recommended*) or change a value from the Mocha menu on the WiiU (e.g. `Skip this menu on launch`).<br />
+This configuration is recommended because it allows you to launch hack games, but also the Homebrew Launcher Channel.
 ```
 [MOCHA]
 viewMode=0
