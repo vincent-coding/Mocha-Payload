@@ -1,6 +1,10 @@
 # Mocha Payload
 Mocha Payload is a modified version of payload.elf allowing to launch the wiiu exploit.<br />They allow you very simply to launch the Mocha CFW Mocha directly instead of the Homebrew Launcher.<br /><br />This program is based on [wiiu-env](https://github.com/wiiu-env/homebrew_launcher_installer)' code.
 
+## Archived
+
+This programme has been archived since the release of [Tiramisu](https://maschell.github.io/homebrew/2021/12/31/tiramisu.html).
+
 ## WARNING
 With this file, MochaCFW is launched instead of the Homebrew Launcher, which makes the Homebrew Launcher inaccessible by the browser.
 You must therefore have the Homebrew Channel installed.<br /><br />The mocha.elf must also be located at this location on the SD card.<br />
